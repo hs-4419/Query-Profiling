@@ -93,17 +93,32 @@ Definitely NO
 - __Filters__ represent the condition applied after reading the data, eg. `where cond 1`, this cond 1 will be shown in filter node
 - While using `EXPLAIN ANALYZE` will also come across actual time representing the time it took for the execution of query and here the unit is sec
 
-## 9) Using `EXPLAIN` to understand the quereies of [todo list](https://github.com/hs-4419/Todo-List?tab=readme-ov-file#todo-list)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B4%5D%20EXPLAIN%20Selecting%20todos%20of%20a%20user%20before%20indexing.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B4%5D%20EXPLAIN%20Selecting%20todos%20of%20a%20user%20after%20indexing.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B5%5D%20EXPLAIN%20updating%20due_date.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B6%5D%20EXPLAIN%20Fetching%20overdue%20todos.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B7%5D%20EXPLAIN%20%23todos%20each%20user%20has.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B8%5D%20EXPLAIN%20updating%20description.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B9%5D%20EXPLAIN%20deleting%20a%20user.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B10%5D%20EXPLAIN%20get%20latest%20todo%20for%20each%20user%20along%20with%20username.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B11%5D%20EXPLAIN%20get%20%23completed%20and%20%23notCompleted%20todos%20for%20each%20user%20with%20userDetails.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B14%5D%20EXPLAIN%20fetching%20all%20todos%20created%20within%20a%20week%20and%20are%20incomplete.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B16%5D%20EXPLAIN%20fetching%20users%20without%20any%20completion%20within%20a%20month.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B19%5D%20EXPLAIN%20full%20text%20search%20before%20creating%20GIN.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B19%5D%20EXPLAIN%20full%20text%20search%20after%20creating%20GIN.png)
+## 9) Using `EXPLAIN` to understand the queries of [todo list](https://github.com/hs-4419/Todo-List?tab=readme-ov-file#todo-list)
+1) Fetching todos of a user
+   - Before creating index on user_id
+     ![Fetching todos of a user before creating index on user_id](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B4%5D%20EXPLAIN%20Selecting%20todos%20of%20a%20user%20before%20indexing.png)
+   - After creating index on user_id
+     ![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B4%5D%20EXPLAIN%20Selecting%20todos%20of%20a%20user%20after%20indexing.png)  
+2) Updating a few todos
+   ![Updating a few todos](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B5%5D%20EXPLAIN%20updating%20due_date.png)
+3) Retrieving overdue todos
+   ![Retrieving overdue todos](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B6%5D%20EXPLAIN%20Fetching%20overdue%20todos.png)
+4) #todos per user
+   ![ #todos per user](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B7%5D%20EXPLAIN%20%23todos%20each%20user%20has.png)
+5) Updating description
+   ![Updating description](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B8%5D%20EXPLAIN%20updating%20description.png)
+6) Deleting a user
+   ![Deleting a user](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B9%5D%20EXPLAIN%20deleting%20a%20user.png)
+7) Get recent todo for each user with user details
+   ![Get recent todo for each user with user details](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B10%5D%20EXPLAIN%20get%20latest%20todo%20for%20each%20user%20along%20with%20username.png)
+8) #complete and #incomplete todos for each user with user details
+   ![#complete and #incomplete todos for each user with user details](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B11%5D%20EXPLAIN%20get%20%23completed%20and%20%23notCompleted%20todos%20for%20each%20user%20with%20userDetails.png)
+9) fetch all todos created within a week and are incomplete
+    ![fetch all todos created within a week and are incomplete](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B14%5D%20EXPLAIN%20fetching%20all%20todos%20created%20within%20a%20week%20and%20are%20incomplete.png)
+10) fetching users without any completion in one month
+    ![fetching users without any completion in one month](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B16%5D%20EXPLAIN%20fetching%20users%20without%20any%20completion%20within%20a%20month.png)
+11) using full text search
+    - before creating inverted index on the ts_vector
+      ![using full text search before creating inverted index on the ts_vector](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B19%5D%20EXPLAIN%20full%20text%20search%20before%20creating%20GIN.png)
+    - after creating inverted index on the ts_vector
+      ![using full text search after creating inverted index on the ts_vector](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B19%5D%20EXPLAIN%20full%20text%20search%20after%20creating%20GIN.png)
