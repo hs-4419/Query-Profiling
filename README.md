@@ -97,28 +97,44 @@ Definitely NO
 1) Fetching todos of a user
    - Before creating index on user_id
      ![Fetching todos of a user before creating index on user_id](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B4%5D%20EXPLAIN%20Selecting%20todos%20of%20a%20user%20before%20indexing.png)
+     + `Workers Planned: 2`- 2 parallel processs will run performing all the tasks listed beneath them i.r from line# 3 to line# 6, the same is denoted by saying `parallel seq scan`
+     + Every worker will only scan half of the todos table (as other half will be scanned/r̥ead from disk by the next worker). While reading rows it will filter the rows based on filter, it's estimated that every worker will return 23 rows each of ~ 120 bytes
+     + Then each worker will sort it's 23 rows, this step is estimarted to end in 244871.06
+     + These 2 workers will each return their set of 23 rows to othe co-rodinator/ manager which is overseeing these workers
+     + The co-ordinator/manger will inturn merge these 2 sets of sorted rows into one. It uses the same approach while merging as is used in merge sort
    - After creating index on user_id
-     ![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B4%5D%20EXPLAIN%20Selecting%20todos%20of%20a%20user%20after%20indexing.png)  
+     ![Fetching todos of a user after creating index on user_id](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B4%5D%20EXPLAIN%20Selecting%20todos%20of%20a%20user%20after%20indexing.png)
+     + Here `Index Scan` is being used intead of `Seq scan` as we have created index
+     + By using index the execution is very fast thus no parallel workers are used
 2) Updating a few todos
    ![Updating a few todos](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B5%5D%20EXPLAIN%20updating%20due_date.png)
 3) Retrieving overdue todos
    ![Retrieving overdue todos](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B6%5D%20EXPLAIN%20Fetching%20overdue%20todos.png)
 4) #todos per user
    ![ #todos per user](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B7%5D%20EXPLAIN%20%23todos%20each%20user%20has.png)
-5) Updating description
+   - `Planned Partition` makes sure that if the table being read far exceeds the memory, in such cases the table is read/ scanned in partitions, and then these partitions are stored as temporary files in HDD/SSD
+   - `Partial HashAggreagte` ...
+6) Updating description
    ![Updating description](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B8%5D%20EXPLAIN%20updating%20description.png)
-6) Deleting a user
+7) Deleting a user
    ![Deleting a user](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B9%5D%20EXPLAIN%20deleting%20a%20user.png)
-7) Get recent todo for each user with user details
+9) Get recent todo for each user with user details
    ![Get recent todo for each user with user details](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B10%5D%20EXPLAIN%20get%20latest%20todo%20for%20each%20user%20along%20with%20username.png)
-8) #complete and #incomplete todos for each user with user details
+   - `Merge Join` ...
+11) #complete and #incomplete todos for each user with user details
    ![#complete and #incomplete todos for each user with user details](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B11%5D%20EXPLAIN%20get%20%23completed%20and%20%23notCompleted%20todos%20for%20each%20user%20with%20userDetails.png)
-9) fetch all todos created within a week and are incomplete
+  - `Parallel Hash` ...
+13) fetch all todos created within a week and are incomplete
     ![fetch all todos created within a week and are incomplete](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B14%5D%20EXPLAIN%20fetching%20all%20todos%20created%20within%20a%20week%20and%20are%20incomplete.png)
-10) fetching users without any completion in one month
+14) fetching users without any completion in one month
     ![fetching users without any completion in one month](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B16%5D%20EXPLAIN%20fetching%20users%20without%20any%20completion%20within%20a%20month.png)
-11) using full text search
+    - Focus on how the query planner converts our `LEFT JOIN` to `ANTI JOIN`
+15) using full text search
     - before creating inverted index on the ts_vector
       ![using full text search before creating inverted index on the ts_vector](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B19%5D%20EXPLAIN%20full%20text%20search%20before%20creating%20GIN.png)
+      + for having full text search inverted index isn't necessary but ts_vector is a must, as here on the fly the the ts_vector is being created and checked against condition of tsquery
     - after creating inverted index on the ts_vector
       ![using full text search after creating inverted index on the ts_vector](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B19%5D%20EXPLAIN%20full%20text%20search%20after%20creating%20GIN.png)
+      + note the cost before and after using inverted index aka GIN
+      + `Bitmap Index Scan` ...
+      + `Bitmap Heap Scan` ...
