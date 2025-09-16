@@ -4,7 +4,7 @@ I remember inserting 1B+ todos only to get stuck in retrieving all of them. Whil
 ## 1) Using `EXPLAIN` on the query to find the original url for a short code
 
 ![Using `EXPLAIN` on the query to find the original url for a short code](https://github.com/hs-4419/Query-Profiling/blob/main/Images/explain%20query%20to%20find%20the%20original%20url%20for%20a%20short%20code.png)
-> text_pattern_ops is used alongside BTree indexes to optimize the queries using like and ilike, it must be mentioned explicitly while creating indexing on a column, it’s most suited for like and ilike searches along with prefix searches only. For eg. 'code%'. It’s neither suitable for middle('%code%') nor suffix('%code') searches.
+> text_pattern_ops must be used alongside BTree indexes to optimize the queries using like and ilike, it must be mentioned explicitly while creating indexing on a column, it’s most suited for like and ilike searches along with prefix searches only. For eg. 'code%'. It’s neither suitable for middle('%code%') nor suffix('%code') searches.
 ## 2) Using `EXPLAIN` on the query to fetch all rows created in the last 24 hours
 ![Using `EXPLAIN` on the query to fetch all rows created in the last 24 hours](https://github.com/hs-4419/Query-Profiling/blob/main/Images/explain%20query%20to%20fetch%20all%20rows%20created%20in%20the%20last%2024%20hours.png)
 ## 3) Using `EXPLAIN` on the query to fetch the latest 100 rows created
