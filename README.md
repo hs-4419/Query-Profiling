@@ -9,6 +9,11 @@ I remember inserting 1B+ todos only to get stuck in retrieving all of them. Whil
 ## 3) Using `EXPLAIN` on the query to fetch the latest 100 rows created
 ![Using `EXPLAIN` on the query to fetch the latest 100 rows created](https://github.com/hs-4419/Query-Profiling/blob/main/Images/explain%20query%20to%20fetch%20the%20latest%20100%20rows%20created.png)
 ## 4) Testing my understandig of `EXPLAIN` (Seq Scan vs Index)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20all.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20id.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20short_url.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20original_url.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20created_at.png)
 | Query | Expeactation | Reality|
 --|--|--
 `EXPLAIN SELECT COUNT(*) FROM url_shortener` | Index | Seq Scan
@@ -42,11 +47,7 @@ __Comparing `EXPLAIN` on [3](https://github.com/hs-4419/Query-Profiling/edit/mai
 > From 1385 ms to 141 ms
 
 __Changes observed in [4](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#4-testing-my-understandig-of-explain-seq-scan-vs-index) after adding index on created_at column__
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20all.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20id.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20short_url.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20original_url.png)
-![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20created_at.png)
+
 
 | Query | Chnages|
 --|--
@@ -59,7 +60,7 @@ __Changes observed in [4](https://github.com/hs-4419/Query-Profiling/edit/main/R
 __Drop the index__
 ![Drpping the index](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20Dropping%20the%20index.png)
 Everything fell back to the previous output  
-All the queries in [4](https://github.com/hs-4419/Query-Profiling#4-testing-my-understandig-of-explain-seq-scan-vs-index) started using sequential scan
+All the queries in [4](https://github.com/hs-4419/Query-Profiling#4-testing-my-understandig-of-explain-seq-scan-vs-index) started using sequential scan  
 Not sure if something else was supposed to happen
 
   
