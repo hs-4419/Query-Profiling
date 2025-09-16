@@ -30,20 +30,18 @@ I remember inserting 1B+ todos only to get stuck in retrieving all of them. Whil
 __Adding index on `created_at` column__  
 ![Indexing created_on column](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20Indexing%20created_at%20column.png)  
   
-### __Comparing `EXPLAIN` on [2](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#2-using-explain-on-the-query-to-fetch-all-rows-created-in-the-last-24-hours) after adding index on created_at column__  
+__Comparing `EXPLAIN` on [2](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#2-using-explain-on-the-query-to-fetch-all-rows-created-in-the-last-24-hours) after adding index on created_at column__
+- Filter by last 24 hours  
+  ![Filter by last 24 hours](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B2%5Dexplain%20query%20to%20fetch%20all%20rows%20created%20in%20the%20last%2024%20hours%20after%20adding%20index.png)
+- Filter by last 14 hours  
+  ![Filter by last 14 hours](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B2%5Dexplain%20query%20to%20fetch%20all%20rows%20created%20in%20the%20last%2014%20hours%20after%20adding%20index.png)
 
-### `Filter by last 24 hours`  
-![Filter by last 24 hours](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B2%5Dexplain%20query%20to%20fetch%20all%20rows%20created%20in%20the%20last%2024%20hours%20after%20adding%20index.png)  
-
-### `Filter by last 14 hours`  
-![Filter by last 14 hours](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B2%5Dexplain%20query%20to%20fetch%20all%20rows%20created%20in%20the%20last%2014%20hours%20after%20adding%20index.png)  
-### __Comparing `EXPLAIN` on [3](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#3-using-explain-on-the-query-to-fetch-the-latest-100-rows-created) after adding index on created_at column__  
+__Comparing `EXPLAIN` on [3](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#3-using-explain-on-the-query-to-fetch-the-latest-100-rows-created) after adding index on created_at column__  
 ![Querying 3 after indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B3%5Dexplain%20query%20to%20fetch%20the%20latest%20100%20rows%20created%20after%20adding%20index.png)  
-
-### `Executing query before indexing`  
-![Executing query before indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Executing%20query%5B3%5D%20before%20indexing.png)  
-### `Executing query after indexing`  
-![Executing query after indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Executing%20query%5B3%5D%20after%20indexing.png)  
+- Executing query before indexing  
+  ![Executing query before indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Executing%20query%5B3%5D%20before%20indexing.png)  
+- Executing query after indexing  
+  ![Executing query after indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Executing%20query%5B3%5D%20after%20indexing.png)  
 > Indexing decreased the execution time by ~90%
 > From 1385 ms to 141 ms
 
@@ -59,19 +57,18 @@ __Changes observed in [4](https://github.com/hs-4419/Query-Profiling/edit/main/R
 `EXPLAIN SELECT COUNT(created_at) FROM url_shortener` |It's using the created_at column's index
 
 __Drop the index__  
-
-![Drpping the index](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20Dropping%20the%20index.png)
-Everything fell back to the previous output  
-All the queries in [4](https://github.com/hs-4419/Query-Profiling#4-testing-my-understandig-of-explain-seq-scan-vs-index) started using sequential scan  
-Not sure if something else was supposed to happen
+![Drpping the index](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20Dropping%20the%20index.png)  
+> Everything fell back to the previous output  
+> All the queries in [4](https://github.com/hs-4419/Query-Profiling#4-testing-my-understandig-of-explain-seq-scan-vs-index) started using sequential scan  
+> Not sure if something else was supposed to happen
 
   
 __Observations__
 - Indexing made the queries to run faster which were using those columns in where, filter clause
 - Indexing alone can't fix the query optimization, the data present in the schema also affects the query planning
 - For eg. in [2](https://github.com/hs-4419/Query-Profiling#2-using-explain-on-the-query-to-fetch-all-rows-created-in-the-last-24-hours) we are fetching all the rows created in last 24 hours, but since all the 10M records present in my schema are created within 1 day and I'm fetching all of them, so the query planner isn't using indexes rarther it's reading all the records sequentially. Whereas as soon as I change the condition to last 14 hours the query planner starts using indexes.
-- Not sure about the behaviour for [4](https://github.com/hs-4419/Query-Profiling#4-testing-my-understandig-of-explain-seq-scan-vs-index) before and after adding index on created_on column. Even though pk_index and unique_col index are present why didn't it took into consideration??
-- Shouldn't it use pk_index and unique_col index when using select count(id) and select count(short_url) just like it did in select count(created_at) ??
+- Not sure about the behaviour for [4](https://github.com/hs-4419/Query-Profiling#4-testing-my-understandig-of-explain-seq-scan-vs-index) before and after adding index on created_on column. Even though pk_index and unique_col index are present why didn't it took into consideration❓❓
+- Shouldn't it use pk_index and unique_col index when using select count(id) and select count(short_url) just like it did in select count(created_at) ❓❓
 
 ## 6) `EXPLAIN` vs `EXPLAIN ANALYSE`
 Explain uses table and DB statistics to generate the time/cost of a query, whereas Explain Analyse actually runs the query and gives the realistic result (time, #rows, etc.)
@@ -98,45 +95,45 @@ Definitely NO
 
 ## 9) Using `EXPLAIN` to understand the queries of [todo list](https://github.com/hs-4419/Todo-List?tab=readme-ov-file#todo-list)
 1) Fetching todos of a user
-   - Before creating index on user_id
+   - Before creating index on user_id  
      ![Fetching todos of a user before creating index on user_id](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B4%5D%20EXPLAIN%20Selecting%20todos%20of%20a%20user%20before%20indexing.png)
      + `Workers Planned: 2`- 2 parallel processs will run performing all the tasks listed beneath them i.r from line# 3 to line# 6, the same is denoted by saying `parallel seq scan`
      + Every worker will only scan half of the todos table (as other half will be scanned/r̥ead from disk by the next worker). While reading rows it will filter the rows based on filter, it's estimated that every worker will return 23 rows each of ~ 120 bytes
      + Then each worker will sort it's 23 rows, this step is estimarted to end in 244871.06
      + These 2 workers will each return their set of 23 rows to othe co-rodinator/ manager which is overseeing these workers
      + The co-ordinator/manger will inturn merge these 2 sets of sorted rows into one. It uses the same approach while merging as is used in merge sort
-   - After creating index on user_id
+   - After creating index on user_id  
      ![Fetching todos of a user after creating index on user_id](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B4%5D%20EXPLAIN%20Selecting%20todos%20of%20a%20user%20after%20indexing.png)
      + Here `Index Scan` is being used intead of `Seq scan` as we have created index
      + By using index the execution is very fast thus no parallel workers are used
-2) Updating a few todos
+2) Updating a few todos  
    ![Updating a few todos](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B5%5D%20EXPLAIN%20updating%20due_date.png)
-3) Retrieving overdue todos
+3) Retrieving overdue todos  
    ![Retrieving overdue todos](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B6%5D%20EXPLAIN%20Fetching%20overdue%20todos.png)
-4) #todos per user
+4) #todos per user  
    ![ #todos per user](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B7%5D%20EXPLAIN%20%23todos%20each%20user%20has.png)
    - `Planned Partition` makes sure that if the table being read far exceeds the memory, in such cases the table is read/ scanned in partitions, and then these partitions are stored as temporary files in HDD/SSD
    - `Partial HashAggreagte` ...
-6) Updating description
+6) Updating description  
    ![Updating description](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B8%5D%20EXPLAIN%20updating%20description.png)
-7) Deleting a user
+7) Deleting a user  
    ![Deleting a user](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B9%5D%20EXPLAIN%20deleting%20a%20user.png)
-9) Get recent todo for each user with user details
+9) Get recent todo for each user with user details  
    ![Get recent todo for each user with user details](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B10%5D%20EXPLAIN%20get%20latest%20todo%20for%20each%20user%20along%20with%20username.png)
    - `Merge Join` ...
-11) #complete and #incomplete todos for each user with user details
+10) #complete and #incomplete todos for each user with user details  
    ![#complete and #incomplete todos for each user with user details](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B11%5D%20EXPLAIN%20get%20%23completed%20and%20%23notCompleted%20todos%20for%20each%20user%20with%20userDetails.png)
-  - `Parallel Hash` ...
-13) fetch all todos created within a week and are incomplete
+    - `Parallel Hash` ...
+11) fetch all todos created within a week and are incomplete  
     ![fetch all todos created within a week and are incomplete](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B14%5D%20EXPLAIN%20fetching%20all%20todos%20created%20within%20a%20week%20and%20are%20incomplete.png)
-14) fetching users without any completion in one month
+12) fetching users without any completion in one month  
     ![fetching users without any completion in one month](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B16%5D%20EXPLAIN%20fetching%20users%20without%20any%20completion%20within%20a%20month.png)
     - Focus on how the query planner converts our `LEFT JOIN` to `ANTI JOIN`
-15) using full text search
-    - before creating inverted index on the ts_vector
+13) using full text search
+    - before creating inverted index on the ts_vector  
       ![using full text search before creating inverted index on the ts_vector](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B19%5D%20EXPLAIN%20full%20text%20search%20before%20creating%20GIN.png)
       + for having full text search inverted index isn't necessary but ts_vector is a must, as here on the fly the the ts_vector is being created and checked against condition of tsquery
-    - after creating inverted index on the ts_vector
+    - after creating inverted index on the ts_vector  
       ![using full text search after creating inverted index on the ts_vector](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B19%5D%20EXPLAIN%20full%20text%20search%20after%20creating%20GIN.png)
       + note the cost before and after using inverted index aka GIN
       + `Bitmap Index Scan` ...
