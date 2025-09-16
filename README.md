@@ -27,22 +27,23 @@ I remember inserting 1B+ todos only to get stuck in retrieving all of them. Whil
 
 
 ## 5) Playing around with `EXPLAIN`
-__Adding index on `created_at` column__
-![Indexing created_on column](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20Indexing%20created_at%20column.png)
+__Adding index on `created_at` column__  
+![Indexing created_on column](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20Indexing%20created_at%20column.png)  
   
-__Comparing `EXPLAIN` on [2](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#2-using-explain-on-the-query-to-fetch-all-rows-created-in-the-last-24-hours) after adding index on created_at column__
-`Filter by last 24 hours`
-![Filter by last 24 hours](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B2%5Dexplain%20query%20to%20fetch%20all%20rows%20created%20in%20the%20last%2024%20hours%20after%20adding%20index.png)
+### __Comparing `EXPLAIN` on [2](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#2-using-explain-on-the-query-to-fetch-all-rows-created-in-the-last-24-hours) after adding index on created_at column__  
 
-`Filter by last 14 hours`
-![Filter by last 14 hours](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B2%5Dexplain%20query%20to%20fetch%20all%20rows%20created%20in%20the%20last%2014%20hours%20after%20adding%20index.png)
-__Comparing `EXPLAIN` on [3](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#3-using-explain-on-the-query-to-fetch-the-latest-100-rows-created) after adding index on created_at column__
-![Querying 3 after indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B3%5Dexplain%20query%20to%20fetch%20the%20latest%20100%20rows%20created%20after%20adding%20index.png)
+### `Filter by last 24 hours`  
+![Filter by last 24 hours](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B2%5Dexplain%20query%20to%20fetch%20all%20rows%20created%20in%20the%20last%2024%20hours%20after%20adding%20index.png)  
 
-`Executing query before indexing`
-![Executing query before indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Executing%20query%5B3%5D%20before%20indexing.png)
-`Executing query after indexing`
-![Executing query after indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Executing%20query%5B3%5D%20after%20indexing.png)
+### `Filter by last 14 hours`  
+![Filter by last 14 hours](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B2%5Dexplain%20query%20to%20fetch%20all%20rows%20created%20in%20the%20last%2014%20hours%20after%20adding%20index.png)  
+### __Comparing `EXPLAIN` on [3](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#3-using-explain-on-the-query-to-fetch-the-latest-100-rows-created) after adding index on created_at column__  
+![Querying 3 after indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B3%5Dexplain%20query%20to%20fetch%20the%20latest%20100%20rows%20created%20after%20adding%20index.png)  
+
+### `Executing query before indexing`  
+![Executing query before indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Executing%20query%5B3%5D%20before%20indexing.png)  
+### `Executing query after indexing`  
+![Executing query after indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Executing%20query%5B3%5D%20after%20indexing.png)  
 > Indexing decreased the execution time by ~90%
 > From 1385 ms to 141 ms
 
@@ -57,7 +58,8 @@ __Changes observed in [4](https://github.com/hs-4419/Query-Profiling/edit/main/R
 `EXPLAIN SELECT COUNT(original_url) FROM url_shortener` | Seq Scan
 `EXPLAIN SELECT COUNT(created_at) FROM url_shortener` |It's using the created_at column's index
 
-__Drop the index__
+__Drop the index__  
+
 ![Drpping the index](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20Dropping%20the%20index.png)
 Everything fell back to the previous output  
 All the queries in [4](https://github.com/hs-4419/Query-Profiling#4-testing-my-understandig-of-explain-seq-scan-vs-index) started using sequential scan  
