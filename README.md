@@ -34,6 +34,13 @@ __Comparing `EXPLAIN` on [2](https://github.com/hs-4419/Query-Profiling/edit/mai
 __Comparing `EXPLAIN` on [3](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#3-using-explain-on-the-query-to-fetch-the-latest-100-rows-created) after adding index on created_at column__
 ![Querying 3 after indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20%5B3%5Dexplain%20query%20to%20fetch%20the%20latest%20100%20rows%20created%20after%20adding%20index.png)
 
+`Executing query before indexing`
+![Executing query before indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Executing%20query%5B3%5D%20before%20indexing.png)
+`Executing query after indexing`
+![Executing query after indexing](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Executing%20query%5B3%5D%20after%20indexing.png)
+> Indexing decreased the execution time by ~90%
+> From 1385 ms to 141 ms
+
 __Changes observed in [4](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#4-testing-my-understandig-of-explain-seq-scan-vs-index) after adding index on created_at column__
 ![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20all.png)
 ![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B4%5D%20explain%20query%20to%20count%20id.png)
@@ -52,15 +59,15 @@ __Changes observed in [4](https://github.com/hs-4419/Query-Profiling/edit/main/R
 __Drop the index__
 ![Drpping the index](https://github.com/hs-4419/Query-Profiling/blob/main/Images/%5B5%5D%20Dropping%20the%20index.png)
 Everything fell back to the previous output  
-All the queries in [4]() started using sequential scan
+All the queries in [4](https://github.com/hs-4419/Query-Profiling#4-testing-my-understandig-of-explain-seq-scan-vs-index) started using sequential scan
 Not sure if something else was supposed to happen
 
   
 __Observations__
 - Indexing made the queries to run faster which were using those columns in where, filter clause
 - Indexing alone can't fix the query optimization, the data present in the schema also affects the query planning
-- For eg. in [2]() we are fetching all the rows created in last 24 hours, but since all the 10M records present in my schema are created within 1 day and I'm fetching all of them, so the query planner isn't using indexes rarther it's reading all the records sequentially. Whereas as soon as I change the condition to last 14 hours the query planner starts using indexes.
-- Not sure about the behaviour for [4]() before and after adding index on created_on column. Even though pk_index and unique_col index are present why didn't it took into consideration??
+- For eg. in [2](https://github.com/hs-4419/Query-Profiling#2-using-explain-on-the-query-to-fetch-all-rows-created-in-the-last-24-hours) we are fetching all the rows created in last 24 hours, but since all the 10M records present in my schema are created within 1 day and I'm fetching all of them, so the query planner isn't using indexes rarther it's reading all the records sequentially. Whereas as soon as I change the condition to last 14 hours the query planner starts using indexes.
+- Not sure about the behaviour for [4](https://github.com/hs-4419/Query-Profiling#4-testing-my-understandig-of-explain-seq-scan-vs-index) before and after adding index on created_on column. Even though pk_index and unique_col index are present why didn't it took into consideration??
 - Shouldn't it use pk_index and unique_col index when using select count(id) and select count(short_url) just like it did in select count(created_at) ??
 
 ## 6) `EXPLAIN` vs `EXPLAIN ANALYSE`
@@ -86,4 +93,17 @@ Definitely NO
 - __Filters__ represent the condition applied after reading the data, eg. `where cond 1`, this cond 1 will be shown in filter node
 - While using `EXPLAIN ANALYZE` will also come across actual time representing the time it took for the execution of query and here the unit is sec
 
-## 9)
+## 9) Using `EXPLAIN` to understand the quereies of [todo list](https://github.com/hs-4419/Todo-List?tab=readme-ov-file#todo-list)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B4%5D%20EXPLAIN%20Selecting%20todos%20of%20a%20user%20before%20indexing.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B4%5D%20EXPLAIN%20Selecting%20todos%20of%20a%20user%20after%20indexing.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B5%5D%20EXPLAIN%20updating%20due_date.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B6%5D%20EXPLAIN%20Fetching%20overdue%20todos.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B7%5D%20EXPLAIN%20%23todos%20each%20user%20has.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B8%5D%20EXPLAIN%20updating%20description.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B9%5D%20EXPLAIN%20deleting%20a%20user.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B10%5D%20EXPLAIN%20get%20latest%20todo%20for%20each%20user%20along%20with%20username.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B11%5D%20EXPLAIN%20get%20%23completed%20and%20%23notCompleted%20todos%20for%20each%20user%20with%20userDetails.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B14%5D%20EXPLAIN%20fetching%20all%20todos%20created%20within%20a%20week%20and%20are%20incomplete.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B16%5D%20EXPLAIN%20fetching%20users%20without%20any%20completion%20within%20a%20month.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B19%5D%20EXPLAIN%20full%20text%20search%20before%20creating%20GIN.png)
+![](https://github.com/hs-4419/Query-Profiling/blob/main/Images/Bonus/%5B19%5D%20EXPLAIN%20full%20text%20search%20after%20creating%20GIN.png)
