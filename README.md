@@ -139,3 +139,132 @@ Definitely NO
       + note the cost before and after using inverted index aka GIN
       + `Bitmap Index Scan` ...
       + `Bitmap Heap Scan` ...
+
+# Practice Practice Practice
+## 1) Writing `WHERE` clause correctly
+__Creating index on `created_at` col__  
+![Creating index](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B1%5D%20Adding%20index.png)  
+__Using `EXPLAIN` to check query execution__
+![Using EXPLAIN](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B1%5D%20Explain%20Select.png)  
+__What's this❓❓__  
+Even though the indexing has been added, the DB doesn't make use of them, it still relies on sequential scan
+## 2) Changing `WHERE` clause to use index
+__Querying data from 2024__
+![Querying data from 2024](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B2%5D%20for%202024%20it's%20using%20index.png)
+__Querying data from 2025__
+![Querying data from 2025](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B2%5D%20for%202025%20it's%20not%20using%20index.png)
+__Observation__
+ - While querying data from 2024 it's using index as expected
+ - But, why does the same query isn't using indexes when the dates are changed??
+ - Isn't it absurd?
+## 3) Understnading indexes to core
+__Query__  
+```
+SELECT short_code, visit_count  
+FROM url_shortener  
+WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'  
+ORDER BY visit_count DESC  
+LIMIT 10;  
+```
+![3](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B3%5D.png)  
+It's not using indexes  
+For indexes to work all the cols being used to filter should be part of the composite index
+
+## 4) Understanding composite index
+```
+CREATE INDEX idx_url_shortener_analytics ON url_shortener 
+    (created_at, visit_count, short_code);
+```
+![using composite index](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B4%5D%20Using%20composite%20index.png)
+
+## 5) Creating index for a query to make it index-only query
+__Query__  
+```
+SELECT DATE(created_at) as date, COUNT(*) as daily_urls
+FROM url_shortener
+WHERE created_at >= CURRENT_DATE - INTERVAL '30 days'
+GROUP BY DATE(created_at)
+ORDER BY date DESC;
+```  
+Since the query is filtering only on the basis on `ceated_at`, and only the same thing is being projected, we only need to create an index on the `created_at` col, which has been already done at [1](https://github.com/hs-4419/Query-Profiling/edit/main/README.md#1-writing-where-clause-correctly)
+
+## 6) Checking if a query will use index or not
+__Index__  
+`Index on (firstname, lastname, country)`  
+__Query__  
+```
+Select contacts
+...
+where country = 'US'
+```
+__Expected result__  
+In order to access country via indexes the query planner would have to read all the indexes and then go to the table to get the contact details of all those rows  
+It's better to seq scan the table then using indexes in this example
+
+## 7) Creating index to cater multiple queries
+__Queries__  
+- SELECT * FROM contacts WHERE lastname = 'Walker' AND country = 'US'
+- SELECT * FROM contacts WHERE country = 'US'
+- SELECT * FROM contacts WHERE firstname = 'James'‍‍ AND lastname = 'Walker' AND country = 'US'
+__Index__
+```
+Create index index_name on tbl_name (country, lastName, firstName)
+```
+
+## 8) Practice - 01
+```
+CREATE INDEX tbl_idx ON tbl (a, date_column)
+
+SELECT *
+  FROM tbl
+ WHERE a = 12
+ ORDER BY date_column DESC
+ LIMIT 1
+```
+
+__ANS__: The created index is a good fit for the query
+
+## 9) Practice - 02
+```
+CREATE INDEX tbl_idx ON tbl (a, b)
+
+SELECT *
+  FROM tbl
+ WHERE a = 38
+   AND b = 1
+
+SELECT *
+  FROM tbl
+ WHERE b = 1
+```
+
+__ANS__: Here the 1st query will use index but 2nd one won't be able to
+
+## 10) Functional Index
+PostgeSQL uses functional index where the value returned by a func is indexed, and while querying the same index is used  
+__Syntax Eg.__  
+```
+Select * from users where lower(email) = 'example@mail.com'
+
+create index email_lowercased on users ((lower(email)));
+```
+
+## 11) Partial Indexes
+__Use cases__  
+1) In real world we use soft delete to audit the data afterwards, in such cases we should always use partial index to index on only thse rows which aren't deleted
+2) If on an e-commmerce website people search for a particular type of product more, then we should have a partial index on only those products 
+
+## 12) Using (%) in `LIKE` queries
+- EXPLAIN ANALYZE SELECT * FROM your_table WHERE column_name LIKE 'vyson';
+  + Uses indexes, as expected
+- EXPLAIN ANALYZE SELECT * FROM your_table WHERE column_name LIKE '%vyson';
+  + Doesn't uses indexes
+- EXPLAIN ANALYZE SELECT * FROM your_table WHERE column_name LIKE '%vyson%';
+  + Doesn't uses indexes
+- EXPLAIN ANALYZE SELECT * FROM your_table WHERE column_name LIKE 'vyson%';
+  + Doesn't uses indexes  
+
+__Extra stuff__
+We can make the queries using prefix searches to use indexes by using `text_pattern_ops` but for suffix and middle fix searches even it won't work
+
+
