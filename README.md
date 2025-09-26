@@ -143,16 +143,16 @@ Definitely NO
 # Practice Practice Practice
 ## 1) Writing `WHERE` clause correctly
 __Creating index on `created_at` col__  
-![Creating index](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B1%5D%20Adding%20index.png)  
+![Creating index](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B1%5D%20Adding%20index.png)    
 __Using `EXPLAIN` to check query execution__
-![Using EXPLAIN](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B1%5D%20Explain%20Select.png)  
+![Using EXPLAIN](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B1%5D%20Explain%20Select.png)   
 __What's this❓❓__  
 Even though the indexing has been added, the DB doesn't make use of them, it still relies on sequential scan
 ## 2) Changing `WHERE` clause to use index
 __Querying data from 2024__
-![Querying data from 2024](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B2%5D%20for%202024%20it's%20using%20index.png)
+![Querying data from 2024](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B2%5D%20for%202024%20it's%20using%20index.png)  
 __Querying data from 2025__
-![Querying data from 2025](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B2%5D%20for%202025%20it's%20not%20using%20index.png)
+![Querying data from 2025](https://github.com/hs-4419/Query-Profiling/blob/main/Practice%20Practice%20Practice/Images/%5B2%5D%20for%202025%20it's%20not%20using%20index.png)  
 __Observation__
  - While querying data from 2024 it's using index as expected
  - But, why does the same query isn't using indexes when the dates are changed??
